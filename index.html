@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f1220"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg">
+<title>برنامه‌ریز مطالعه</title>
+<style>
+:root{--bg:#0f1220;--s:#171b2e;--s2:#1f2440;--t:#e8eaf6;--sub:#9aa3c7;--p:#7c5cff;--a:#22d3ee;--b:#2a3055;--g:#34d399;--r:#f87171;--op:#fff}
+[data-t=light]{--bg:#f3f5fb;--s:#fff;--s2:#eceffa;--t:#1f2340;--sub:#6b7394;--p:#5b5bf0;--a:#0ea5e9;--b:#dde1f0;--g:#16a34a;--r:#dc2626}
+[data-t=ocean]{--bg:#071c29;--s:#0d2d40;--s2:#12405a;--t:#e6f6ff;--sub:#8fb8cc;--p:#06b6d4;--a:#facc15;--b:#18506e;--op:#04222c}
+[data-t=sunset]{--bg:#2a1230;--s:#3a1a42;--s2:#4b2256;--t:#fff0f6;--sub:#d1a5c4;--p:#fb7185;--a:#fbbf24;--b:#5d2c6a;--op:#3a0b18}
+[data-t=forest]{--bg:#0e1f16;--s:#16301f;--s2:#1e3f2a;--t:#eafff0;--sub:#9cc7aa;--p:#34d399;--a:#a3e635;--b:#285238;--op:#052e1a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--t);font:15px Vazirmatn,Tahoma,system-ui,sans-serif;padding:env(safe-area-inset-top) 0 0}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 4px}
+h1{font-size:20px;margin:0}h2{font-size:16px;margin:0 0 8px}small,.sub{color:var(--sub)}
+main{padding:8px 14px 96px;max-width:640px;margin:auto}
+.card{background:var(--s);border:1px solid var(--b);border-radius:18px;padding:14px;margin:10px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid .card{margin:0}
+.big{font-size:22px;font-weight:700;color:var(--p)}
+button,select,input{font:inherit;color:var(--t);background:var(--s2);border:1px solid var(--b);border-radius:12px;padding:10px 12px}
+input,select{width:100%}button{cursor:pointer}
+.pri{background:var(--p);color:var(--op);border:0;font-weight:700}.dng{color:var(--r)}
+.row{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--b)}.row:last-child{border:0}
+.row .g{flex:1}.dot{width:14px;height:14px;border-radius:5px;flex:none}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--p);padding:0}input[type=color]{width:46px;height:42px;padding:2px}
+.bar{height:12px;background:var(--s2);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--p);transition:.3s}
+.chart{display:flex;gap:6px;align-items:flex-end;height:130px}.chart div{flex:1;text-align:center;font-size:11px;color:var(--sub);display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.chart b{display:block;background:var(--a);border-radius:6px 6px 0 0;min-height:3px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:4px 0}.chips button{flex:none;padding:8px 12px}.chips .on{background:var(--p);color:var(--op);border:0}
+.tb{overflow-x:auto;border-radius:14px;border:1px solid var(--b);margin:10px 0}.tb table{border-collapse:collapse;min-width:620px;width:100%}.tb th,.tb td{border:1px solid var(--b);text-align:center;font-size:11px;padding:0;height:42px}.tb th{background:var(--s2);color:var(--sub);padding:6px 2px}.tb td.h{background:var(--s2);color:var(--sub);position:sticky;right:0;width:46px}.tb td div{color:#fff;height:100%;padding:3px 2px;display:flex;flex-direction:column;justify-content:center;line-height:1.3;font-weight:700}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--s);border-top:1px solid var(--b);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;border-radius:0;background:none;font-size:11px;padding:8px 0;color:var(--sub)}nav .on{color:var(--p);font-weight:700}
+nav span{display:block;font-size:20px}
+dialog{background:var(--s);color:var(--t);border:1px solid var(--b);border-radius:20px;width:92%;max-width:420px}dialog::backdrop{background:#0008}
+label{display:block;margin:8px 0 4px;color:var(--sub);font-size:13px}.fl{display:flex;gap:8px;margin-top:12px}.fl button{flex:1}
+</style></head><body>
+<header><h1 id="hi"></h1><button id="th">🎨</button></header>
+<main id="v"></main>
+<nav id="nv"></nav><dialog id="dlg"></dialog>
+<script>
+const $=s=>document.querySelector(s),fa=x=>String(x).replace(/\d/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]),
+e=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const D=['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'],
+M=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'],
+PAL=['#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#06b6d4','#3b82f6','#6366f1','#a855f7','#ec4899'],
+GN={10:'دهم',11:'یازدهم',12:'دوازدهم'},
+F={'ریاضی و فیزیک':['ریاضی','هندسه','آمار و احتمال','فیزیک','شیمی'],'علوم تجربی':['ریاضی','آمار و احتمال','زیست‌شناسی','فیزیک','شیمی'],'علوم انسانی':['ریاضی و آمار','اقتصاد','جامعه‌شناسی','تاریخ','جغرافیا','منطق','فلسفه']},
+C=['ادبیات فارسی','عربی','دین و زندگی','زبان انگلیسی'],
+TH=[['dark','تاریک'],['light','روشن'],['ocean','اقیانوس'],['sunset','غروب'],['forest','جنگل']],
+NV=[['today','🏠','امروز'],['week','🗓','هفته'],['subs','📚','درس‌ها'],['exam','📝','امتحان'],['focus','🍅','تمرکز']];
+let S={name:'',grade:10,field:'ریاضی و فیزیک',theme:'dark',subs:[],ses:[],ex:[],log:{},id:1};
+try{Object.assign(S,JSON.parse(localStorage.getItem('sp')||'{}'))}catch(_){}
+const save=()=>{try{localStorage.setItem('sp',JSON.stringify(S))}catch(_){}};
+const iso=d=>{d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')},
+di=d=>(d.getDay()+1)%7,mn=t=>+t.slice(0,2)*60+ +t.slice(3),hm=m=>String(m/60|0).padStart(2,'0')+':'+String(m%60).padStart(2,'0'),
+col=n=>(S.subs.find(s=>s.n==n)||{c:'#64748b'}).c,tot=i=>Object.values(S.log[i]||{}).reduce((a,b)=>a+b,0),
+fm=m=>{const h=m/60|0,r=m%60;return fa(h?h+' ساعت'+(r?' و '+r+' دقیقه':''):r+' دقیقه')};
+function g2j(gy,gm,gd){const g=[0,31,59,90,120,151,181,212,243,273,304,334];let jy=gy>1600?979:0;gy-=gy>1600?1600:621;
+const g2=gm>2?gy+1:gy;let d=365*gy+((g2+3)/4|0)-((g2+99)/100|0)+((g2+399)/400|0)-80+gd+g[gm-1];
+jy+=33*(d/12053|0);d%=12053;jy+=4*(d/1461|0);d%=1461;if(d>365){jy+=(d-1)/365|0;d=(d-1)%365}
+return d<186?[jy,1+(d/31|0),1+d%31]:[jy,7+((d-186)/30|0),1+(d-186)%30]}
+const jd=d=>{const[y,m,dd]=g2j(d.getFullYear(),d.getMonth()+1,d.getDate());return fa(dd+' '+M[m-1]+' '+y)};
+const dd=iso=>new Date(iso+'T12:00:00');
+function addLog(i,s,m){S.log[i]=S.log[i]||{};S.log[i][s]=Math.max(0,(S.log[i][s]||0)+m)}
+function streak(){let d=new Date(),n=0;if(!tot(iso(d)))d.setDate(d.getDate()-1);while(tot(iso(d))>0){n++;d.setDate(d.getDate()-1)}return n}
+function preset(){S.subs=[...F[S.field],...C].map((n,i)=>({n,c:PAL[i%PAL.length],w:C.includes(n)?1:2}));
+const ns=S.subs.map(s=>s.n);S.ses=S.ses.filter(x=>ns.includes(x.s));save()}
+function auto(){const per=+prompt('چند جلسه‌ی ۶۰ دقیقه‌ای در روز؟ (جمعه تعطیل)','3');if(!per||!S.subs.length)return;
+if(S.ses.length&&!confirm('برنامه‌ی فعلی جایگزین شود؟'))return;
+const o=[];for(let r=0;r<3;r++)S.subs.forEach(s=>{if(s.w>r)o.push(s.n)});S.ses=[];let i=0;
+for(let d=0;d<6;d++){let t=960;for(let k=0;k<per&&t+60<=1440;k++,t+=70)S.ses.push({id:S.id++,s:o[i++%o.length],d,a:hm(t),b:hm(t+60),done:[]})}
+save();go()}
+let V='today',selD=di(new Date());
+const T={run:0,mode:'f',rem:1500,len:25,br:5,iv:null,sub:''};
+function applyTheme(){document.documentElement.dataset.t=S.theme;
+document.querySelector('meta[name=theme-color]').content=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()}
+function donut(o){const en=Object.entries(o).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]),tt=en.reduce((a,b)=>a+b[1],0);
+if(!tt)return'<p class=sub>در ۷ روز اخیر مطالعه‌ای ثبت نشده.</p>';
+const R=70,C=2*Math.PI*R;let c=0;
+return`<div style="text-align:center"><svg viewBox="0 0 200 200" width=220><circle cx=100 cy=100 r=${R} fill=none stroke="var(--s2)" stroke-width=26 />${en.map(([q,m])=>{const f=m/tt,x=`<circle cx=100 cy=100 r=${R} fill=none stroke="${col(q)}" stroke-width=26 transform="rotate(-90 100 100)" stroke-dasharray="${f*C} ${C}" stroke-dashoffset=${-c*C} />`;c+=f;return x}).join('')}<text x=100 y=96 text-anchor=middle font-size=13 fill="var(--sub)">مجموع</text><text x=100 y=122 text-anchor=middle font-size=18 font-weight=700 fill="var(--t)">${fa((tt/60).toFixed(1))} ساعت</text></svg></div>${en.map(([q,m])=>`<div class=row><span class=dot style="background:${col(q)}"></span><span class=g>${e(q)}</span><small>${fm(m)} • ${fa(Math.round(100*m/tt))}٪</small></div>`).join('')}`}
+function hrBtns(){return[...Array(19)].map((_,i)=>{const h=i+5,off=(S.hh||[]).includes(h);return`<button data-a=hrt data-h=${h} class="${off?'':'on'}">${fa(String(h).padStart(2,'0'))}:۰۰</button>`}).join('')}
+function wtable(){const g={},t=di(new Date());
+S.ses.forEach(x=>{const a=mn(x.a),b=mn(x.b);for(let h=a/60|0;h<=((b-1)/60|0);h++)g[x.d+'-'+h]={x,f:h==(a/60|0)}});
+let r='<div class=tb><table><tr><th></th>'+D.map((d,k)=>`<th ${k==t?'style="color:var(--p)"':''}>${d}${k==t?' •':''}</th>`).join('')+'</tr>';
+for(let h=5;h<24;h++){if((S.hh||[]).includes(h))continue;r+=`<tr><td class=h>${fa(String(h).padStart(2,'0'))}:۰۰</td>`+D.map((_,d)=>{const c=g[d+'-'+h];
+return c?`<td data-a=ses data-id=${c.x.id}><div style="background:${col(c.x.s)}">${c.f?e(c.x.s)+'<small style="color:#fffc">'+fa(c.x.a+'–'+c.x.b)+'</small>':''}</div></td>`:`<td data-a=cell data-d=${d} data-h=${h}></td>`}).join('')+'</tr>'}
+return r+'</table></div><small class=sub>روی خانه‌ی خالی بزن تا جلسه اضافه شود، روی جلسه بزن تا ویرایش شود.</small>'}
+function stats(days){const wk=days.reduce((a,b)=>a+b[1],0),g=S.goal||10,by={},by7={};
+for(let k=0;k<30;k++){const d=new Date();d.setDate(d.getDate()-k);const l=S.log[iso(d)]||{};for(const q in l){by[q]=(by[q]||0)+l[q];if(k<7)by7[q]=(by7[q]||0)+l[q]}}
+const all=Object.values(S.log).reduce((a,l)=>a+Object.values(l).reduce((x,y)=>x+y,0),0),st=streak(),
+B=[['🌱','اولین مطالعه',all>0],['🔥','۳ روز پیاپی',st>=3],['⚡','۷ روز پیاپی',st>=7],['🎯','هدف هفتگی',wk>=g*60],['⏳','۱۰ ساعت',all>=600],['🏆','۵۰ ساعت',all>=3000]],
+ent=Object.entries(by).sort((a,b)=>b[1]-a[1]),mx=ent.length?ent[0][1]:1;
+return`<div class=card><h2>🍩 سهم درس‌ها در ۷ روز اخیر</h2>${donut(by7)}</div><div class=card><h2>🎯 هدف هفتگی</h2><div class=bar><i style="width:${Math.min(100,100*wk/(g*60))}%"></i></div><small>${fm(wk)} از ${fa(g)} ساعت</small>
+<label>هدف (ساعت در هفته)</label><input type=number min=1 max=100 data-a=goal value=${g}></div>
+<div class=card><h2>📊 مطالعه به‌تفکیک درس (۳۰ روز اخیر)</h2>${ent.map(([q,m])=>`<div class=row><span class=dot style="background:${col(q)}"></span><span class=g>${e(q)}</span><small>${fm(m)}</small></div><div class=bar><i style="width:${100*m/mx}%;background:${col(q)}"></i></div>`).join('')||'<p class=sub>هنوز مطالعه‌ای ثبت نشده.</p>'}</div>
+<div class=card><h2>🏅 نشان‌ها</h2><div class=chips style="flex-wrap:wrap">${B.map(([i,t,o])=>`<span style="padding:8px 12px;border-radius:12px;background:var(--s2);opacity:${o?1:.35}">${i} ${t}</span>`).join('')}</div></div>`}
+const views={
+today(){const n=new Date(),i=iso(n),ts=S.ses.filter(x=>x.d==di(n)).sort((a,b)=>a.a>b.a?1:-1),dn=ts.filter(x=>x.done.includes(i)).length,
+days=[...Array(7)].map((_,k)=>{const d=new Date();d.setDate(d.getDate()-6+k);return[D[di(d)].slice(0,3),tot(iso(d))]}),mx=Math.max(60,...days.map(x=>x[1])),
+nx=S.ex.filter(x=>x.d>=i).sort((a,b)=>a.d>b.d?1:-1)[0],extra=stats(days);
+return`<p class=sub>${D[di(n)]}، ${jd(n)} • پایه ${GN[S.grade]} ${S.field}</p>
+<div class=card><h2>پیشرفت امروز</h2><div class=bar><i style="width:${ts.length?100*dn/ts.length:0}%"></i></div><small>${fa(dn)} از ${fa(ts.length)} جلسه</small></div>
+<div class=grid><div class=card><small>⏱ ۷ روز اخیر</small><div class=big>${fm(days.reduce((a,b)=>a+b[1],0))}</div></div>
+<div class=card><small>🔥 روز پیاپی</small><div class=big>${fa(streak())}</div></div></div>
+${extra}<div class=card><small>📝 امتحان بعدی</small><div class=big>${nx?fa(Math.round((dd(nx.d)-dd(i))/864e5))+' روز • '+e(nx.s):'—'}</div></div>
+<div class=card><h2>📅 برنامه‌ی امروز</h2>${ts.map(x=>`<label class=row><input type=checkbox data-a=done data-id=${x.id} ${x.done.includes(i)?'checked':''}><span class=dot style="background:${col(x.s)}"></span><span class=g>${e(x.s)}</span><small>${fa(x.a+'–'+x.b)}</small></label>`).join('')||'<p class=sub>امروز جلسه‌ای نداری 🎉</p>'}</div>
+<div class=card><h2>📊 مطالعه‌ی هفته (ساعت)</h2><div class=chart>${days.map(([l,v])=>`<div><small>${v?fa((v/60).toFixed(1)):''}</small><b style="height:${100*v/mx}%"></b>${l}</div>`).join('')}</div></div>`},
+week(){const wv=S.wv||'list',tp=`<div class=chips><button data-a=wv data-id=list class="${wv=='list'?'on':''}">☰ لیست روزانه</button><button data-a=wv data-id=table class="${wv=='table'?'on':''}">▦ جدول هفتگی</button>${wv=='table'?'<button data-a=hrs>⏰ ساعت‌ها</button>':''}</div>`;
+if(wv=='table')return tp+wtable()+`<div class=fl><button class=pri data-a=newses>＋ جلسه‌ی جدید</button><button data-a=auto>✨ برنامه‌ی خودکار</button></div>`;
+const ts=S.ses.filter(x=>x.d==selD).sort((a,b)=>a.a>b.a?1:-1);
+return tp+`<div class=chips>${D.map((d,k)=>`<button data-a=day data-id=${k} class="${k==selD?'on':''}">${d}</button>`).join('')}</div>
+<div class=card>${ts.map(x=>`<div class=row data-a=ses data-id=${x.id}><span class=dot style="background:${col(x.s)}"></span><span class=g>${e(x.s)}</span><small>${fa(x.a+'–'+x.b)}</small></div>`).join('')||'<p class=sub>برای این روز جلسه‌ای نیست.</p>'}</div>
+<div class=fl><button class=pri data-a=newses>＋ جلسه‌ی جدید</button><button data-a=auto>✨ برنامه‌ی خودکار</button></div>`},
+subs(){return`<div class=card><h2>⚙ پروفایل</h2><label>نام</label><input data-a=name value="${e(S.name)}">
+<label>پایه</label><select data-a=grade>${[10,11,12].map(g=>`<option value=${g} ${g==S.grade?'selected':''}>${GN[g]}</option>`).join('')}</select>
+<label>رشته</label><select data-a=field>${Object.keys(F).map(f=>`<option ${f==S.field?'selected':''}>${f}</option>`).join('')}</select>
+<div class=fl><button class=pri data-a=preset>بارگذاری درس‌های پیش‌فرض</button></div></div>
+<div class=card><h2>💾 پشتیبان‌گیری</h2><small>اطلاعات فقط روی همین مرورگر ذخیره می‌شود؛ از آن فایل پشتیبان بگیر.</small><div class=fl><button data-a=exp>📤 دریافت فایل</button><button data-a=imp>📥 بازیابی</button></div><input type=file id=imf accept=.json hidden></div>
+<div class=card><h2>📚 درس‌ها</h2>${S.subs.map((s,k)=>`<div class=row><span class=dot style="background:${s.c}"></span><span class=g>${e(s.n)} <small>${'★'.repeat(s.w)}</small></span><button class=dng data-a=delsub data-id=${k}>🗑</button></div>`).join('')||'<p class=sub>درسی نیست.</p>'}
+<div class=fl><button data-a=newsub>＋ افزودن درس</button></div></div>`},
+exam(){return`<div class=card><h2>📝 امتحان‌ها</h2>${[...S.ex].sort((a,b)=>a.d>b.d?1:-1).map(x=>{const l=Math.round((dd(x.d)-dd(iso()))/864e5);
+return`<div class=row><span class=dot style="background:${col(x.s)}"></span><span class=g>${e(x.t)} — ${e(x.s)}<br><small>${jd(dd(x.d))} • ${l<0?'برگزار شد':l==0?'امروز!':fa(l)+' روز مانده'}</small></span><button class=dng data-a=delex data-id=${x.id}>🗑</button></div>`}).join('')||'<p class=sub>امتحانی ثبت نشده.</p>'}</div>
+<div class=fl><button class=pri data-a=newex>＋ افزودن امتحان</button></div>`},
+focus(){return`<div class=card style="text-align:center"><small id=fm></small>
+<svg viewBox="0 0 200 200" width=240><circle cx=100 cy=100 r=88 fill=none stroke="var(--s2)" stroke-width=14 /><circle id=fr cx=100 cy=100 r=88 fill=none stroke="var(--p)" stroke-width=14 stroke-linecap=round transform="rotate(-90 100 100)" stroke-dasharray=553 />
+<text id=ft x=100 y=112 text-anchor=middle font-size=38 font-weight=700 fill="var(--t)"></text></svg>
+<select data-a=fsub>${S.subs.map(s=>`<option ${s.n==T.sub?'selected':''}>${e(s.n)}</option>`).join('')}</select>
+<div class=fl><button class=pri id=fgo data-a=fgo></button><button data-a=frs>↺ ریست</button></div>
+<small>مطالعه‌ی امروز: ${fm(tot(iso()))}</small></div>`}};
+function go(){$('#hi').textContent=S.name?'سلام '+S.name+' 👋':'📖 برنامه‌ریز مطالعه';applyTheme();
+$('#nv').innerHTML=NV.map(([k,i,t])=>`<button data-a=nav data-id=${k} class="${k==V?'on':''}"><span>${i}</span>${t}</button>`).join('');
+$('#v').innerHTML=views[V]();if(V=='focus')draw()}
+function draw(){if(!$('#ft'))return;const tl=(T.mode=='f'?T.len:T.br)*60;$('#ft').textContent=fa(String(T.rem/60|0).padStart(2,'0')+':'+String(T.rem%60).padStart(2,'0'));
+$('#fr').style.strokeDashoffset=553*(1-T.rem/tl);$('#fm').textContent=T.mode=='f'?'زمان تمرکز 🎯':'زمان استراحت ☕';$('#fgo').textContent=T.run?'⏸ توقف':'▶ شروع'}
+function tick(){if(--T.rem<=0){if(T.mode=='f'){if(T.sub)addLog(iso(),T.sub,T.len);save();T.mode='b';T.rem=T.br*60;navigator.vibrate&&navigator.vibrate(300)}else{T.mode='f';T.rem=T.len*60}
+if(V=='focus')go()}draw()}
+function dlg(h){const d=$('#dlg');d.innerHTML=h;d.showModal();return d}
+function sesForm(id,day,st){const x=S.ses.find(q=>q.id==id)||{s:S.subs[0].n,d:day,a:st||'16:00',b:st?hm(Math.min(mn(st)+60,1439)):'17:00'};
+const d=dlg(`<h2>${id?'ویرایش':'افزودن'} جلسه</h2><label>درس</label><select id=f1>${S.subs.map(s=>`<option ${s.n==x.s?'selected':''}>${e(s.n)}</option>`).join('')}</select>
+<label>روز</label><select id=f2>${D.map((n,k)=>`<option value=${k} ${k==x.d?'selected':''}>${n}</option>`).join('')}</select>
+<label>شروع</label><input type=time id=f3 value=${x.a}><label>پایان</label><input type=time id=f4 value=${x.b}>
+<div class=fl><button class=pri id=ok>ذخیره</button>${id?'<button class=dng id=rm>حذف</button>':''}<button id=cx>بستن</button></div>`);
+$('#cx').onclick=()=>d.close();if(id)$('#rm').onclick=()=>{S.ses=S.ses.filter(q=>q.id!=id);save();d.close();go()};
+$('#ok').onclick=()=>{const a=$('#f3').value,b=$('#f4').value;if(!a||!b||mn(b)<=mn(a))return alert('زمان پایان باید بعد از شروع باشد.');
+const o={s:$('#f1').value,d:+$('#f2').value,a,b};const c=S.ses.find(q=>q.id!=id&&q.d==o.d&&mn(a)<mn(q.b)&&mn(q.a)<mn(b));
+if(c&&!confirm('با «'+c.s+'» تداخل دارد. ادامه؟'))return;if(id)Object.assign(x,o);else S.ses.push({id:S.id++,done:[],...o});selD=o.d;save();d.close();go()}}
+document.addEventListener('click',ev=>{const t=ev.target.closest('[data-a]');if(!t||t.type=='checkbox'||t.tagName=='SELECT'||t.tagName=='INPUT')return;const a=t.dataset.a,id=t.dataset.id;
+if(a=='nav'){V=id;go()}else if(a=='day'){selD=+id;go()}else if(a=='ses')sesForm(+id);else if(a=='hrs'){const d=dlg(`<h2>⏰ ساعت‌های نمایش در جدول</h2><small>روی هر ساعت بزن تا از جدول پنهان یا دوباره نمایش داده شود. ساعت‌های رنگی نمایش داده می‌شوند.</small><div id=hb class=chips style="flex-wrap:wrap;margin-top:10px">${hrBtns()}</div><div class=fl><button id=hall>نمایش همه</button><button class=pri id=cx>تأیید</button></div>`);
+$('#cx').onclick=()=>{d.close();go()};$('#hall').onclick=()=>{S.hh=[];save();$('#hb').innerHTML=hrBtns()}}
+else if(a=='hrt'){const h=+t.dataset.h;S.hh=S.hh||[];const k=S.hh.indexOf(h);if(k>=0)S.hh.splice(k,1);else{if(S.hh.length>=18)return alert('حداقل یک ساعت باید نمایش داده شود.');S.hh.push(h)}save();$('#hb').innerHTML=hrBtns()}
+else if(a=='wv'){S.wv=id;save();go()}else if(a=='cell'){if(!S.subs.length)return alert('ابتدا چند درس اضافه کن.');sesForm(0,+t.dataset.d,hm(+t.dataset.h*60))}
+else if(a=='newses'){if(!S.subs.length)return alert('ابتدا از بخش درس‌ها چند درس اضافه کن.');sesForm(0,selD)}
+else if(a=='auto'){if(!S.subs.length)return alert('ابتدا چند درس اضافه کن.');auto()}
+else if(a=='preset'){if(!S.subs.length||confirm('درس‌های فعلی جایگزین شوند؟')){preset();go()}}
+else if(a=='exp'){const b=new Blob([JSON.stringify(S)],{type:'application/json'}),u=URL.createObjectURL(b),l=document.createElement('a');l.href=u;l.download='study-planner-backup-'+iso()+'.json';l.click();setTimeout(()=>URL.revokeObjectURL(u),1e3)}
+else if(a=='imp')$('#imf').click()
+else if(a=='delsub'){const n=S.subs[id].n;if(confirm('«'+n+'» و جلسه‌هایش حذف شود؟')){S.subs.splice(id,1);S.ses=S.ses.filter(x=>x.s!=n);save();go()}}
+else if(a=='newsub'){const d=dlg(`<h2>افزودن درس</h2><label>نام</label><input id=f1><label>رنگ</label><input type=color id=f2 value="${PAL[S.subs.length%PAL.length]}"><label>اهمیت</label><select id=f3><option value=1>۱ — سبک</option><option value=2 selected>۲ — متوسط</option><option value=3>۳ — سنگین</option></select><div class=fl><button class=pri id=ok>ذخیره</button><button id=cx>بستن</button></div>`);
+$('#cx').onclick=()=>d.close();$('#ok').onclick=()=>{const n=$('#f1').value.trim();if(!n||S.subs.some(s=>s.n==n))return alert('نام معتبر و غیرتکراری وارد کن.');S.subs.push({n,c:$('#f2').value,w:+$('#f3').value});save();d.close();go()}}
+else if(a=='newex'){if(!S.subs.length)return alert('ابتدا چند درس اضافه کن.');const d=dlg(`<h2>افزودن امتحان</h2><label>عنوان</label><input id=f1 placeholder="امتحان میان‌ترم"><label>درس</label><select id=f2>${S.subs.map(s=>`<option>${e(s.n)}</option>`).join('')}</select><label>تاریخ</label><input type=date id=f3 value="${iso()}"><div class=fl><button class=pri id=ok>افزودن</button><button id=cx>بستن</button></div>`);
+$('#cx').onclick=()=>d.close();$('#ok').onclick=()=>{if(!$('#f3').value)return;S.ex.push({id:S.id++,t:$('#f1').value.trim()||'امتحان',s:$('#f2').value,d:$('#f3').value});save();d.close();go()}}
+else if(a=='delex'){S.ex=S.ex.filter(x=>x.id!=id);save();go()}
+else if(a=='fgo'){T.run=!T.run;clearInterval(T.iv);if(T.run)T.iv=setInterval(tick,1000);draw()}
+else if(a=='frs'){clearInterval(T.iv);Object.assign(T,{run:0,mode:'f',rem:T.len*60});draw()}});
+document.addEventListener('change',ev=>{const t=ev.target,a=t.dataset.a;if(!a)return;
+if(a=='done'){const x=S.ses.find(q=>q.id==t.dataset.id),i=iso(),m=mn(x.b)-mn(x.a);
+if(t.checked&&!x.done.includes(i)){x.done.push(i);addLog(i,x.s,m)}else if(!t.checked&&x.done.includes(i)){x.done=x.done.filter(z=>z!=i);addLog(i,x.s,-m)}save();go()}
+else if(a=='name'){S.name=t.value.trim();save();$('#hi').textContent=S.name?'سلام '+S.name+' 👋':'📖 برنامه‌ریز مطالعه'}
+else if(a=='goal'){S.goal=Math.max(1,Math.min(100,+t.value||10));save();go()}else if(a=='grade'){S.grade=+t.value;save()}else if(a=='field'){S.field=t.value;save()}else if(a=='fsub')T.sub=t.value});
+document.addEventListener('change',ev=>{if(ev.target.id!='imf')return;const f=ev.target.files[0];if(!f)return;
+f.text().then(t=>{try{const o=JSON.parse(t);if(!Array.isArray(o.subs)||!Array.isArray(o.ses))throw 0;if(!confirm('اطلاعات فعلی با فایل پشتیبان جایگزین شود؟'))return;
+S=Object.assign({name:'',grade:10,field:'ریاضی و فیزیک',theme:'dark',subs:[],ses:[],ex:[],log:{},id:1},o);save();T.sub=S.subs[0]?S.subs[0].n:'';go()}catch(_){alert('فایل پشتیبان معتبر نیست.')}});ev.target.value=''});
+$('#th').onclick=()=>{const k=TH.findIndex(t=>t[0]==S.theme);S.theme=TH[(k+1)%TH.length][0];save();go()};
+if(!S.subs.length)preset();T.sub=S.subs[0]?S.subs[0].n:'';go();
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></body></html>
